@@ -78,17 +78,21 @@ module top();
    
    reg clk, rst;
 
+   reg [ADDR_WIDTH-1:0] write_addr;
+   reg [DATA_WIDTH-1:0] write_data;
+   
+   
    // Not used   
    reg [2:0]            s_axil_awprot;
    // Not used
    reg [2:0]            s_axil_arprot;
 
    reg [ADDR_WIDTH-1:0] s_axil_awaddr;
-   //reg                  s_axil_awvalid;
-   reg [DATA_WIDTH-1:0] s_axil_wdata;
-   reg [STRB_WIDTH-1:0] s_axil_wstrb;
-   reg                  s_axil_wvalid;
-   reg                  s_axil_bready;
+
+   wire [DATA_WIDTH-1:0] s_axil_wdata;
+   wire [STRB_WIDTH-1:0] s_axil_wstrb;
+   wire                  s_axil_wvalid;
+   wire                 s_axil_bready;
 
    reg [ADDR_WIDTH-1:0] s_axil_araddr;
    reg                  s_axil_arvalid;
@@ -110,11 +114,11 @@ module top();
    initial begin
       #1 rst = 1;
 
-      s_axil_awaddr = 1;
-      s_axil_wdata = 2345;
-      s_axil_wvalid = 1;
-      //s_axil_awvalid = 1;
-      s_axil_wstrb = 5'b11111;
+      // s_axil_awaddr = 1;
+      // s_axil_wdata = 2345;
+      // s_axil_wvalid = 1;
+      // //s_axil_awvalid = 1;
+      // s_axil_wstrb = 5'b11111;
 
       s_axil_arvalid = 0;
       
