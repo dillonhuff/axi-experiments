@@ -20,8 +20,6 @@ module axi_write_handler(input clk,
 
                          // AXI module API
                          output reg                      s_axil_awvalid,
-                         output [STRB_WIDTH-1:0]         s_axil_wstrb,
-
                          output reg                      s_axil_wvalid,
 
                          output reg [DATA_WIDTH - 1 : 0] s_axil_wdata,
@@ -30,7 +28,8 @@ module axi_write_handler(input clk,
                          input                           s_axil_bvalid,
                          input [1:0]                     s_axil_bresp,
 
-                         output s_axil_bready
+                         output [STRB_WIDTH-1:0]         s_axil_wstrb,
+                         output                          s_axil_bready
                         );
 
    parameter DATA_WIDTH = 32;
@@ -85,7 +84,7 @@ module top();
    reg [2:0]            s_axil_arprot;
 
    reg [ADDR_WIDTH-1:0] s_axil_awaddr;
-   reg                  s_axil_awvalid;
+   //reg                  s_axil_awvalid;
    reg [DATA_WIDTH-1:0] s_axil_wdata;
    reg [STRB_WIDTH-1:0] s_axil_wstrb;
    reg                  s_axil_wvalid;
@@ -114,7 +113,7 @@ module top();
       s_axil_awaddr = 1;
       s_axil_wdata = 2345;
       s_axil_wvalid = 1;
-      s_axil_awvalid = 1;
+      //s_axil_awvalid = 1;
       s_axil_wstrb = 5'b11111;
 
       s_axil_arvalid = 0;
@@ -203,7 +202,7 @@ module top();
          $display("Write address valid");
 
          s_axil_wvalid <= 0;
-         s_axil_awvalid <= 0;
+         //s_axil_awvalid <= 0;
 
          s_axil_rready <= 1;
          s_axil_arvalid <= 1;
@@ -237,5 +236,28 @@ module top();
        .s_axil_rready(s_axil_rready));
    
        
+   axi_write_handler write_handler(.clk(clk),
+                                   .rst(rst),
+
+                                   // User facing API
+                                   .write_data(write_data),
+                                   .write_addr(write_addr),
+                                   .start_write(start_write),
+
+                                   .ready(ready),
+
+                                   // AXI module API
+                                   .s_axil_awvalid(s_axil_awvalid),
+                                   .s_axil_wvalid(s_axil_wvalid),
+
+                                   .s_axil_wdata(s_axil_wdata),
+                                   .s_axil_awaddr(s_axil_awaddr),
+
+                                   .s_axil_bvalid(s_axil_bvalid),
+                                   .s_axil_bresp(s_axil_bresp),
+
+                                   .s_axil_wstrb(s_axil_wstrb),
+                                   .s_axil_bready(s_axil_bready)
+                                   );
    
 endmodule
