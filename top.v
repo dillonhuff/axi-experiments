@@ -6,13 +6,12 @@ module top();
    
    reg clk, rst;
 
-   reg [ADDR_WIDTH-1:0] s_axil_awaddr;
-
    // Not used   
    reg [2:0]            s_axil_awprot;
    // Not used
    reg [2:0]            s_axil_arprot;
 
+   reg [ADDR_WIDTH-1:0] s_axil_awaddr;
    reg                  s_axil_awvalid;
    reg [DATA_WIDTH-1:0] s_axil_wdata;
    reg [STRB_WIDTH-1:0] s_axil_wstrb;
@@ -39,6 +38,7 @@ module top();
    initial begin
       #1 rst = 1;
 
+      s_axil_awaddr = 1;
       s_axil_wdata = 2345;
       s_axil_wvalid = 1;
       s_axil_awvalid = 1;
@@ -99,24 +99,28 @@ module top();
       #1 clk = 1;
 
       $display("slave read is ready   = %d", s_axil_arready);
+      $display("slave data            = %d", s_axil_rdata);      
       $display("-------------------------");
 
       #1 clk = 0;
       #1 clk = 1;
 
       $display("slave read is ready   = %d", s_axil_arready);
+      $display("slave data            = %d", s_axil_rdata);      
       $display("-------------------------");
 
       #1 clk = 0;
       #1 clk = 1;
 
       $display("slave read is ready   = %d", s_axil_arready);
+      $display("slave data            = %d", s_axil_rdata);      
       $display("-------------------------");
 
       #1 clk = 0;
       #1 clk = 1;
 
       $display("slave read is ready   = %d", s_axil_arready);
+      $display("slave data            = %d", s_axil_rdata);      
       $display("-------------------------");
       
    end // initial begin
