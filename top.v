@@ -4,39 +4,33 @@
 //    1. Assume write data and valid show up at the same time
 //    2. Handle waiting for the write response to return
 
+// NOTE: Part of the problem with hardware modularity is that you can't
+// hide the interface to a shared resource inside another component, it
+// has to be instantiated and shared across components to be usable.
+
 module axi_write_handler(input clk,
-                        input                           rst,
+                         input                           rst,
 
-                        input [DATA_WIDTH - 1 : 0]      write_data,
-                        input [ADDR_WIDTH - 1 : 0]      write_addr,
-                        input                           start_write,
+                         // User facing API
+                         input [DATA_WIDTH - 1 : 0]      write_data,
+                         input [ADDR_WIDTH - 1 : 0]      write_addr,
+                         input                           start_write,
 
-                        output                          ready,
+                         output                          ready,
 
-   //output [ADDR_WIDTH-1:0] s_axil_awaddr;
-                        output reg                      s_axil_awvalid,
-   // reg [DATA_WIDTH-1:0] s_axil_wdata;
-   // reg [STRB_WIDTH-1:0] s_axil_wstrb;
+                         // AXI module API
+                         output reg                      s_axil_awvalid,
+                         output [STRB_WIDTH-1:0]         s_axil_wstrb,
 
-                        output reg                      s_axil_wvalid,
+                         output reg                      s_axil_wvalid,
 
-                        output reg [DATA_WIDTH - 1 : 0] s_axil_wdata,
-                        output reg [ADDR_WIDTH - 1 : 0] s_axil_waddr
+                         output reg [DATA_WIDTH - 1 : 0] s_axil_wdata,
+                         output reg [ADDR_WIDTH - 1 : 0] s_axil_awaddr,
 
-   // reg                  s_axil_bready;
+                         input                           s_axil_bvalid,
+                         input [1:0]                     s_axil_bresp,
 
-   // reg [ADDR_WIDTH-1:0] s_axil_araddr;
-
-   // reg                  s_axil_arvalid;
-
-   // reg                   s_axil_rready;
-
-   
-   // wire                 s_axil_awready;
-   // wire                 s_axil_wready;
-   // wire [1:0]           s_axil_bresp;
-   // wire                 s_axil_bvalid;
-
+                         output s_axil_bready
                         );
 
    parameter DATA_WIDTH = 32;
@@ -47,11 +41,8 @@ module axi_write_handler(input clk,
 
    assign ready = ready_reg;
 
-   // s_axil_awaddr = 1;
-
-   // s_axil_wdata = 2345;
-
-   // s_axil_wstrb = 5'b11111;
+   assign s_axil_bready = 1'b1;
+   assign s_axil_wstrb = 5'b11111;
    
    always @(posedge clk) begin
       if (rst) begin
@@ -59,13 +50,22 @@ module axi_write_handler(input clk,
 
          s_axil_wvalid <= 0;
          s_axil_awvalid <= 0;
+
       end else if (start_write) begin
+
          s_axil_wvalid <= 1;
          s_axil_awvalid <= 1;
 
          s_axil_wdata <= write_data;
-         s_axil_waddr <= write_addr;
+         s_axil_awaddr <= write_addr;
 
+         ready_reg <= 0;
+
+      end else if (s_axil_bvalid && (!s_axil_bresp)) begin
+         ready_reg <= 1;
+
+         s_axil_wvalid <= 0;
+         s_axil_awvalid <= 0;
       end
    end
 
