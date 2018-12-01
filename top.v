@@ -87,7 +87,7 @@ module top();
    // Not used
    reg [2:0]            s_axil_arprot;
 
-   reg [ADDR_WIDTH-1:0] s_axil_awaddr;
+   wire [ADDR_WIDTH-1:0] s_axil_awaddr;
 
    wire [DATA_WIDTH-1:0] s_axil_wdata;
    wire [STRB_WIDTH-1:0] s_axil_wstrb;
@@ -205,7 +205,7 @@ module top();
       if (s_axil_bvalid) begin
          $display("Write address valid");
 
-         s_axil_wvalid <= 0;
+         //s_axil_wvalid <= 0;
          //s_axil_awvalid <= 0;
 
          s_axil_rready <= 1;
