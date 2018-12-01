@@ -160,11 +160,11 @@ always @* begin
     s_axil_rresp_next = 2'b00;
     s_axil_rvalid_next = s_axil_rvalid_reg && !s_axil_rready;
 
-   $display("======================");
-   $display("s_axil_arvalid = %d", s_axil_arvalid);   
-   $display("s_axil_rvalid  = %d", s_axil_rvalid);
-   $display("s_axil_arready = %d", s_axil_arready);
-   $display("&&&&&&&&&&&&&&&&&&&&&&");
+   // $display("======================");
+   // $display("s_axil_arvalid = %d", s_axil_arvalid);   
+   // $display("s_axil_rvalid  = %d", s_axil_rvalid);
+   // $display("s_axil_arready = %d", s_axil_arready);
+   // $display("&&&&&&&&&&&&&&&&&&&&&&");
    
     if (s_axil_arvalid && (!s_axil_rvalid || s_axil_rready) && (!s_axil_arready)) begin
 
@@ -173,7 +173,7 @@ always @* begin
         s_axil_rresp_next = 2'b00;
         s_axil_rvalid_next = 1'b1;
 
-       $display("s_axil_arready_next = %d", s_axil_arready_next);       
+       //$display("s_axil_arready_next = %d", s_axil_arready_next);       
         mem_rd_en = 1'b1;
     end
 end
