@@ -38,6 +38,46 @@ module top();
    wire                  s_axil_rvalid;
 
    reg                   s_axil_rready;
+
+   initial begin
+      #1 rst = 1;
+
+      s_axil_wdata = 2345;
+      s_axil_wvalid = 1;
+      s_axil_awvalid = 1;
+      
+      #1 clk = 0;
+      #1 clk = 1;
+      
+
+      #1 rst = 0;
+
+      $display("slave write is ready = %d", s_axil_awready);
+      $display("slave read is ready  = %d", s_axil_arready); 
+      $display("-------------------------");
+      
+      
+      #1 clk = 0;
+      #1 clk = 1;
+
+      $display("slave write is ready = %d", s_axil_awready);
+      $display("slave read is ready  = %d", s_axil_arready); 
+      $display("-------------------------");
+      
+      
+      #1 clk = 0;
+      #1 clk = 1;
+
+      $display("slave write is ready = %d", s_axil_awready);
+      $display("slave read is ready  = %d", s_axil_arready); 
+      $display("-------------------------");
+      
+   end // initial begin
+
+   always @(posedge clk) begin
+      if (s_axil_arready) begin
+      end
+   end
    
 
    axil_ram #(.DATA_WIDTH(32), .ADDR_WIDTH(5))
