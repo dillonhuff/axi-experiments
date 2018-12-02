@@ -70,6 +70,27 @@ module axi_write_handler(input clk,
       end
    end
 
+endmodule // axi_write_handler
+
+module axi_read_handler(input clk,
+                        input                       rst,
+                        
+                        output [DATA_WIDTH - 1 : 0] read_data,
+                        input [ADDR_WIDTH - 1 : 0]  read_addr,
+                        input                       start_read,
+
+                        output reg ready);
+
+   parameter DATA_WIDTH = 32;
+   parameter ADDR_WIDTH = 5;
+   parameter STRB_WIDTH = (DATA_WIDTH/8);
+
+   always @(posedge clk) begin
+      if (rst) begin
+         ready <= 1;
+      end
+   end
+
 endmodule
 
 module top();
@@ -83,6 +104,13 @@ module top();
    reg [ADDR_WIDTH-1:0] write_addr;
    reg [DATA_WIDTH-1:0] write_data;
    reg                  start_write;
+   wire                 write_ready;
+   
+
+   reg [ADDR_WIDTH-1:0] read_addr;
+   wire [DATA_WIDTH-1:0] read_data;
+   reg                  start_read;
+   wire                  read_ready;
    
    // Not used   
    reg [2:0]            s_axil_awprot;
@@ -116,12 +144,6 @@ module top();
    initial begin
       #1 rst = 1;
 
-      // s_axil_awaddr = 1;
-      // s_axil_wdata = 2345;
-      // s_axil_wvalid = 1;
-      // //s_axil_awvalid = 1;
-      // s_axil_wstrb = 5'b11111;
-
       s_axil_arvalid = 0;
       
       #1 clk = 0;
@@ -129,9 +151,9 @@ module top();
 
       #1 rst = 0;      
 
-      write_addr = 1;
-      write_data = 2345;
-      start_write = 1;
+      #1 write_addr = 1;
+      #1 write_data = 2345;
+      #1 start_write = 1;
 
       $display("slave write is ready   = %d", s_axil_awready);
       $display("slave write data ready = %d", s_axil_wready);
@@ -142,6 +164,8 @@ module top();
       #1 clk = 0;
       #1 clk = 1;
 
+      #1 start_write = 0;
+
       $display("slave write is ready   = %d", s_axil_awready);
       $display("slave write data ready = %d", s_axil_wready);
       $display("slave write data valid = %d", s_axil_bvalid);
@@ -150,6 +174,8 @@ module top();
       
       #1 clk = 0;
       #1 clk = 1;
+
+      #1 start_write = 0;
 
       $display("slave write is ready   = %d", s_axil_awready);
       $display("slave write data ready = %d", s_axil_wready);
@@ -253,7 +279,7 @@ module top();
                                    .write_addr(write_addr),
                                    .start_write(start_write),
 
-                                   .ready(ready),
+                                   .ready(write_ready),
 
                                    // AXI module API
                                    .s_axil_awvalid(s_axil_awvalid),
@@ -268,5 +294,16 @@ module top();
                                    .s_axil_wstrb(s_axil_wstrb),
                                    .s_axil_bready(s_axil_bready)
                                    );
+
+   axi_read_handler read_handle(.clk(clk),
+                                .rst(rst),
+
+                                .read_data(read_data),
+                                .read_addr(read_addr),
+                                .start_read(start_read),
+
+                                .ready(read_ready)
+
+                                );
    
 endmodule
