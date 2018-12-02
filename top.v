@@ -73,13 +73,25 @@ module axi_write_handler(input clk,
 endmodule // axi_write_handler
 
 module axi_read_handler(input clk,
-                        input                       rst,
-                        
-                        output [DATA_WIDTH - 1 : 0] read_data,
-                        input [ADDR_WIDTH - 1 : 0]  read_addr,
-                        input                       start_read,
+                        input                           rst,
 
-                        output reg ready);
+                        // User facing API
+                        output reg [DATA_WIDTH - 1 : 0] read_data,
+                        input [ADDR_WIDTH - 1 : 0]      read_addr,
+                        input                           start_read,
+
+                        output reg                      ready,
+
+                        // AXI facing API
+                        output reg                      s_axil_rready,
+                        output reg                      s_axil_arvalid,
+                        output reg [ADDR_WIDTH - 1 : 0] s_axil_araddr,
+                        input                           s_axil_arready, 
+                        input [DATA_WIDTH - 1 : 0]      s_axil_rdata);
+   
+         // s_axil_rready <= 1;
+         // s_axil_arvalid <= 1;
+         // s_axil_araddr <= 1;
 
    parameter DATA_WIDTH = 32;
    parameter ADDR_WIDTH = 5;
@@ -88,8 +100,22 @@ module axi_read_handler(input clk,
    always @(posedge clk) begin
       if (rst) begin
          ready <= 1;
+         s_axil_arvalid <= 0;
+         
+      end else if (start_read) begin
+         ready <= 0;
+
+         s_axil_rready <= 1;
+         s_axil_arvalid <= 1;
+         s_axil_araddr <= read_addr;
+         
+      end else if (s_axil_arready) begin
+         read_data <= s_axil_rdata;
       end
    end
+
+      // $display("slave read is ready   = %d", s_axil_arready);
+      // $display("slave data            = %d", s_axil_rdata);      
 
 endmodule
 
@@ -124,9 +150,9 @@ module top();
    wire                  s_axil_wvalid;
    wire                 s_axil_bready;
 
-   reg [ADDR_WIDTH-1:0] s_axil_araddr;
-   reg                  s_axil_arvalid;
-   reg                   s_axil_rready;
+   wire [ADDR_WIDTH-1:0] s_axil_araddr;
+   wire                 s_axil_arvalid;
+   wire                   s_axil_rready;
 
    
    wire                 s_axil_awready;
@@ -144,8 +170,6 @@ module top();
    initial begin
       #1 rst = 1;
 
-      s_axil_arvalid = 0;
-      
       #1 clk = 0;
       #1 clk = 1;
 
@@ -183,24 +207,22 @@ module top();
       $display("slave write response   = %d", s_axil_bresp);
       $display("-------------------------");
 
+      read_addr = 1;
+      start_read = 1;
+      
       #1 clk = 0;
       #1 clk = 1;
 
-      $display("slave write is ready   = %d", s_axil_awready);
-      $display("slave write data ready = %d", s_axil_wready);
-      $display("slave write data valid = %d", s_axil_bvalid);
-      $display("slave write response   = %d", s_axil_bresp);
+      $display("slave read is ready   = %d", s_axil_arready);
+      $display("slave data            = %d", s_axil_rdata);      
       $display("-------------------------");
-
+      
       #1 clk = 0;
       #1 clk = 1;
 
-      $display("slave write is ready   = %d", s_axil_awready);
-      $display("slave write data ready = %d", s_axil_wready);
-      $display("slave write data valid = %d", s_axil_bvalid);
-      $display("slave write response   = %d", s_axil_bresp);
+      $display("slave read is ready   = %d", s_axil_arready);
+      $display("slave data            = %d", s_axil_rdata);      
       $display("-------------------------");
-
 
       #1 clk = 0;
       #1 clk = 1;
@@ -239,9 +261,9 @@ module top();
          //s_axil_wvalid <= 0;
          //s_axil_awvalid <= 0;
 
-         s_axil_rready <= 1;
-         s_axil_arvalid <= 1;
-         s_axil_araddr <= 1;
+         // s_axil_rready <= 1;
+         // s_axil_arvalid <= 1;
+         // s_axil_araddr <= 1;
 
       end
    end
@@ -302,8 +324,13 @@ module top();
                                 .read_addr(read_addr),
                                 .start_read(start_read),
 
-                                .ready(read_ready)
+                                .ready(read_ready),
 
+                                .s_axil_rready(s_axil_rready),
+                                .s_axil_arvalid(s_axil_arvalid),
+                                .s_axil_araddr(s_axil_araddr),
+                                .s_axil_arready(s_axil_arready), 
+                                .s_axil_rdata(s_axil_rdata)
                                 );
    
 endmodule
