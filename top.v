@@ -89,10 +89,6 @@ module axi_read_handler(input clk,
                         input                           s_axil_arready, 
                         input [DATA_WIDTH - 1 : 0]      s_axil_rdata);
    
-         // s_axil_rready <= 1;
-         // s_axil_arvalid <= 1;
-         // s_axil_araddr <= 1;
-
    parameter DATA_WIDTH = 32;
    parameter ADDR_WIDTH = 5;
    parameter STRB_WIDTH = (DATA_WIDTH/8);
@@ -213,45 +209,36 @@ module top();
       #1 clk = 0;
       #1 clk = 1;
 
-      $display("slave read is ready   = %d", s_axil_arready);
-      $display("slave data            = %d", s_axil_rdata);      
+      #1 start_read = 0;
+      
+      $display("slave read is ready   = %d", read_data);
       $display("-------------------------");
       
       #1 clk = 0;
       #1 clk = 1;
 
-      $display("slave read is ready   = %d", s_axil_arready);
-      $display("slave data            = %d", s_axil_rdata);      
-      $display("-------------------------");
-
-      #1 clk = 0;
-      #1 clk = 1;
-
-      $display("slave read is ready   = %d", s_axil_arready);
-      $display("slave data            = %d", s_axil_rdata);      
-      $display("-------------------------");
-
-      #1 clk = 0;
-      #1 clk = 1;
-
-      $display("slave read is ready   = %d", s_axil_arready);
-      $display("slave data            = %d", s_axil_rdata);      
-      $display("-------------------------");
-
-      #1 clk = 0;
-      #1 clk = 1;
-
-      $display("slave read is ready   = %d", s_axil_arready);
-      $display("slave data            = %d", s_axil_rdata);      
-      $display("-------------------------");
-
-      #1 clk = 0;
-      #1 clk = 1;
-
-      $display("slave read is ready   = %d", s_axil_arready);
-      $display("slave data            = %d", s_axil_rdata);      
+      $display("slave read is ready   = %d", read_data);
       $display("-------------------------");
       
+      #1 clk = 0;
+      #1 clk = 1;
+
+      $display("slave read is ready   = %d", read_data);
+      $display("-------------------------");
+      
+      #1 clk = 0;
+      #1 clk = 1;
+
+      $display("slave read is ready   = %d", read_data);
+      $display("-------------------------");
+      
+      #1 clk = 0;
+      #1 clk = 1;
+
+
+      #1 clk = 0;
+      #1 clk = 1;
+
    end // initial begin
 
    always @(posedge clk) begin
