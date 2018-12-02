@@ -258,13 +258,6 @@ module top();
       if (s_axil_bvalid) begin
          $display("Write address valid");
 
-         //s_axil_wvalid <= 0;
-         //s_axil_awvalid <= 0;
-
-         // s_axil_rready <= 1;
-         // s_axil_arvalid <= 1;
-         // s_axil_araddr <= 1;
-
       end
    end
    
