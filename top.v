@@ -80,7 +80,7 @@ module top();
 
    reg [ADDR_WIDTH-1:0] write_addr;
    reg [DATA_WIDTH-1:0] write_data;
-   
+   reg                  valid;
    
    // Not used   
    reg [2:0]            s_axil_awprot;
@@ -120,12 +120,16 @@ module top();
       // //s_axil_awvalid = 1;
       // s_axil_wstrb = 5'b11111;
 
+      write_addr = 1;
+      write_data = 2345;
+      start_write = 1;
+      
       s_axil_arvalid = 0;
       
       #1 clk = 0;
       #1 clk = 1;
       
-
+      start_write = 0;
       #1 rst = 0;
 
       $display("slave write is ready   = %d", s_axil_awready);
